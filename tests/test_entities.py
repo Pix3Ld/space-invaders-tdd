@@ -5,10 +5,11 @@ from game.entities import Player
 class PlayerTestInit(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.player = Player(x=100,y=100,hp=3,speed=5)
+        self.player = Player(x=100,y=100,hp=3,speed=5,screen_width=800)
     
 #=================testy==================#
     def test_player_start_position(self):
+        
         self.assertEqual(self.player.x,100)
         self.assertEqual(self.player.y,100)
 
@@ -22,9 +23,36 @@ class PlayerTestInit(unittest.TestCase):
         self.assertTrue(self.player.is_alive())
     
     def test_player_left_position(self):
+        
         self.player.move_left()
         self.assertEqual(self.player.x,95)
 
     def test_player_right_position(self):
+       
         self.player.move_right()
         self.assertEqual(self.player.x,105)
+    
+    def test_left_boundry(self):
+       
+        self.player.x=0
+        self.player.move_left()
+        self.assertEqual(self.player.x,0)
+
+    def test_right_boundry(self):
+       
+        self.player.x=100
+        self.player.move_right()
+        self.assertEqual(self.player.x,105)
+    
+    def test_near_right_boundry(self):
+        
+        self.player.x=797
+        self.player.move_right()
+        self.assertEqual(self.player.x,797)
+    
+    def test_near_left_boundry(self):
+    
+        self.player.x=3
+        self.player.move_left()
+        self.assertEqual(self.player.x,3)
+    
