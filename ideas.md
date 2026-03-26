@@ -1,4 +1,5 @@
-pygame space invaders trudnawe + łatwo zrobić unittesty automatyczne  
+pygame-ce space invaders 
+z unittestami oraz black  
 
 
 ## 2. Sposób bieżącej kontroli wyników nauczania
@@ -19,7 +20,6 @@ pliku, interakcja z użytkownikiem).
 konsekwetnie. Jej stosowanie nie jest obowiązkowe.
 
 ### 3.2 Testy jednostkowe
-
 
 1. Testy należy zaimplementować przy użyciu bibliotek omawianach na ćwiczeniach.
 2. Łącznie należy stworzyć ok. 100-150 różnorodnych testów.
@@ -45,14 +45,7 @@ konsekwetnie. Jej stosowanie nie jest obowiązkowe.
 4. Zastosowanie zaawansowanych technik testowania (5pkt)
 5. Osiągnięcie wymaganego pokrycia kodu (10 pkt)
 
-#### 3.3.3 Obrona projektu (10pkt)
-1. Odpowiedź na zadanie pytania do oddanego projektu (10 pkt)
-> !!! UWAGA !!!
->
-> Jeżeli w tym kroku zostanie wykryta niesamodzielność pracy to skutkuje to
-> wyzerowaniem punktów z projektu zaliczeniowego!
 
-Obrona projektu będzie dokonana w trakcie zajęć przy innych osobach
 
 ### 3.4 Przykładowa struktura projektu
 
@@ -72,12 +65,6 @@ projekt/
     README.md
 ```
 
-## 4. Termin i forma oddania projektu
-
-1. Projekt należy oddać w formie spakowanego kodu do wystawionego zadania na utworzonym zespole MS Teams.
-2. Termin oddania: 27.05.2025 do godz 23:59
-3. Projekt powinien zawierać plik README.md z krótką dokumentacją (nie rozwijajmy się za specjalnie w tym kroku - ważne, aby było opis czego dotyczy aplikacja, co robi, jak uruchomić i apkę i testy, itd.)
-4. W arcxhiwum (preferowany zip) powinien znajdować się plik requirements.txt z listą zależności (potrzebnych bibliotek, ich wersji, wersji pythona itd.)
 
 ## 5. Przykładowe tematy aplikacji
 
@@ -94,37 +81,7 @@ Można oczywiście swoje aplikacje.
 
 Przykładowy projekt od [Pana Doktora Jastrzębskiego](https://github.com/pjastr/PFsample), który jest zdecydowanie mniejszą skalą niżli projekt do wykonania na zaliczenie przedmiotu - **proszę zwracać uwagę na wymagania co do zaliczenia!!!!**
 
-## Uwagi dodatkowe
-
-1. Projekt jest indywidualny.
-2. Konsultacje w sprawie projektu możliwe są podczas zajęć oraz w godzinach konsultacji.
-3. Ocena uwzględnia terminowość oddania projektu.
-4. Plagiat/niesamodzielność skutkuje niezaliczeniem projektu.
-
-## 6. Możliwość korzystania z materiałów pomocniczych podczas zaliczenia
-
-Można korzystać z dowolnych materiałów o ile ich licencja umożliwia skorzystanie z nich na cele edukacyjne. Wszystkie wykorzystane materiały powinny być odpowiednio [oznaczone](https://piojas.pl/wp-content/uploads/2025/03/licencje-1.pdf) - skąd wzięte, jaka licencja, link, itd. . W trakcie obrony projektu wgląd będzie tylko do własnego kodu i dokumentacji bibliotek. Oceniana również będzie tylko część wykonana samodzielnie przez osobę studencką.
-
-## 7. Zasada ustalania oceny końcowej zaliczenia przedmiotu
-
-Zaliczenie ćwiczeń będzie przyznane tym uczestnikom zajęć, którzy uzyskają sumę co najmniej 51 punktów do oceny końcowej. Maksymalna
-liczba punktów do zdobycia to 100 (nadmiarowe punkty, o ile takowe będą, nie będą uwzględniane). Ocena końcowa zostanie wyznaczona według następującego wzoru:
-```
-0  – 50 pkt   – ndst (2,0)
-51 – 60 pkt   – dst  (3,0)
-61 – 70 pkt   – dst+ (3,5)
-71 – 80 pkt   – db   (4,0)
-81 – 90 pkt   – db+  (4,5)
-91 – 100+ pkt – bdb  (5,0)
-```
-
-Z przedmiotu w zakresie ćwiczeń nie jest przewidzian poprawa (Chyba, że ktoś zdąży do końca zajęć poprawić projekt, bo nie zaliczył - jestem skory do niektórych pertrakcji :) )
-
-## 8. Inne
-
-Wszystkie sprawy nieuregulowane lub sporne rozstrzyga koordynator przedmiotu (poza sytuacjami określonymi w odrębnych przepisach).
-
-## Prawdopodobny rozkład zajęć
+## Prawdopodobny rozkład zajęć (wskaźnik tego co można użyć w projekcie)
 
 1. 25.02: Sylabus. Wprowadzenie do unittest cz. 1.
 2. 04.03: Wprowadzenie do unittest cz. 2 - dokańczanie zadań.
@@ -154,14 +111,4 @@ Pytania i odpowiedzi. Helion.
 unit tests in Python. Apress.
 5. Dooley, J. F., & Kazakova, V. A. (2020). Software development, design, and coding:
 With patterns, debugging, unit testing, and refactoring. Apress
-
-<br>
-
-## Kontakt
-mgr inż. Adrian Albrecht:
-- chat (wiadomość prywatna) na MS Teams
-- mail 📧 [adrian.albrecht@matman.uwm.edu.pl](mailto:adrian.albrecht@matman.uwm.edu.pl)
-- Konsultacje: środa 13:30 – 16:30 (czasami możliwe wtorki od 11:30 po wcześniejszym ustaleniu)
-    - sala E1/20 (lub inna ustalona wcześniej z osobami studenckimi sala w przypadku konsultacji zbiorowych) 
-
 
