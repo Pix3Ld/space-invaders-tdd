@@ -1,4 +1,3 @@
-import pygame
 class Player():
     '''player basic logic'''
 
@@ -19,3 +18,7 @@ class Player():
     def move_right(self):
         if self.x + self.speed <= self.screen_width: 
             self.x += self.speed  
+
+    def take_damage(self,dmg):
+        if self.is_alive():
+            self.hp -= dmg

@@ -7,7 +7,7 @@ class PlayerTestInit(unittest.TestCase):
     def setUp(self) -> None:
         self.player = Player(x=100,y=100,hp=3,speed=5,screen_width=800)
     
-#=================testy==================#
+#=================testy gracza ==================#
     def test_player_start_position(self):
         
         self.assertEqual(self.player.x,100)
@@ -56,3 +56,13 @@ class PlayerTestInit(unittest.TestCase):
         self.player.move_left()
         self.assertEqual(self.player.x,3)
     
+    def test_player_dmg(self):
+        
+        self.player.take_damage(1)
+        self.assertEqual(self.player.hp,2)
+    
+    def test_negative_dmg(self):
+
+        self.player.hp=0
+        self.player.take_damage(1)
+        self.assertEqual(self.player.hp,0)
