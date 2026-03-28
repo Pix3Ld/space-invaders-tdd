@@ -22,3 +22,14 @@ class Player():
     def take_damage(self,dmg):
         if self.is_alive():
             self.hp -= dmg
+    def shoot(self) -> "Bullet | None":
+        return Bullet(x=self.x,y=self.y,speed=10,damage=1,direction='up',owner=self) if self.is_alive() else None
+class Bullet():
+    '''bullet basic logic'''
+    def __init__(self,x,y,speed,damage,direction,owner) -> None:
+        self.x = x
+        self.y = y
+        self.speed = speed
+        self.damage = damage
+        self.diraction = direction
+        self.owner = owner

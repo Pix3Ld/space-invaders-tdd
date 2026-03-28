@@ -1,6 +1,6 @@
 import unittest 
 
-from game.entities import Player
+from game.entities import Player, Bullet
 
 class PlayerTestInit(unittest.TestCase):
 
@@ -66,3 +66,21 @@ class PlayerTestInit(unittest.TestCase):
         self.player.hp=0
         self.player.take_damage(1)
         self.assertEqual(self.player.hp,0)
+
+#=================testy pocisku ==================#
+    def test_player_bullet(self):
+        
+        bullet = self.player.shoot()
+        self.assertIsInstance(bullet, Bullet)
+
+    def test_player_bullet_negative(self):
+        
+        self.player.hp=0
+        bullet = self.player.shoot()
+        self.assertIsNone(bullet)
+        
+    def test_bullet_owner(self):
+
+        bullet = self.player.shoot()
+        self.assertIsNotNone(bullet)
+        self.assertEqual(bullet.owner,self.player)  # type: ignore
