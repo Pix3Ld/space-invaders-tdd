@@ -84,3 +84,14 @@ class PlayerTestInit(unittest.TestCase):
         bullet = self.player.shoot()
         self.assertIsNotNone(bullet)
         self.assertEqual(bullet.owner,self.player)  # type: ignore
+
+#=================testy resetu ==================#
+    def test_player_reset(self):
+        self.player.hp=0
+        self.player.position_reset()
+        self.assertEqual(self.player.x,100)
+    
+    def test_negative_reset(self):
+        self.player.hp=1
+        self.player.position_reset()
+        self.assertEqual(self.player.x,100)
