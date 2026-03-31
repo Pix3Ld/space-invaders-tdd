@@ -1,17 +1,19 @@
 class Player():
     '''player basic logic'''
 
-    def __init__(self,x,y,hp,speed,screen_width=800) -> None:
+    def __init__(self,x,y,hp,speed,points,screen_width=800) -> None:
         
         self.x = x
         self.y = y
         self.hp=hp
         self.speed=speed
         self.screen_width = screen_width
+        self.points = points
 
         self.starting_x = x
         self.starting_y = y
         self.starting_hp = hp
+        self.starting_points = points
 
 
     def is_alive(self) -> bool:
@@ -32,18 +34,36 @@ class Player():
     def shoot(self) -> "Bullet | None":
         return Bullet(x=self.x,y=self.y,speed=10,damage=1,direction='up',owner=self) if self.is_alive() else None
     
-    def position_reset(self):
-        self.x = self.starting_x
-        self.y = self.starting_y
-        self.hp = self.starting_hp
+    def player_reset(self):
+        if not self.is_alive():
+            self.x = self.starting_x
+            self.y = self.starting_y
+            self.hp = self.starting_hp
+            self.points= self.starting_points
     
+    def player_score(self):
+        if self.is_alive() and Enemy.enemy_down:
+            self.points+=100
 
 class Bullet():
+
     '''bullet basic logic'''
     def __init__(self,x,y,speed,damage,direction,owner) -> None:
         self.x = x
         self.y = y
         self.speed = speed
         self.damage = damage
-        self.diraction = direction
+        self.direction = direction
         self.owner = owner
+
+class Enemy():
+    '''enemy basic logic'''
+    def __init__(self,x,y,hp,speed,damage=1) -> None:
+        self.x = x
+        self.y = y
+        self.hp = hp
+        self.speed = speed
+        self.damage = damage
+        
+    def enemy_down(self) -> bool:
+        return self.hp <= 0

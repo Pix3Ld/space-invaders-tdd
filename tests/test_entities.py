@@ -1,11 +1,11 @@
 import unittest 
 
-from game.entities import Player, Bullet
+from game.entities import Player, Bullet, Enemy
 
 class PlayerTestInit(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.player = Player(x=100,y=100,hp=3,speed=5,screen_width=800)
+        self.player = Player(x=100,y=100,hp=3,speed=5,points=0,screen_width=800)
     
 #=================testy gracza ==================#
     def test_player_start_position(self):
@@ -88,10 +88,42 @@ class PlayerTestInit(unittest.TestCase):
 #=================testy resetu ==================#
     def test_player_reset(self):
         self.player.hp=0
-        self.player.position_reset()
+        self.player.player_reset()
         self.assertEqual(self.player.x,100)
+        self.assertEqual(self.player.y,100)
+        self.assertEqual(self.player.hp,3)
+        self.assertEqual(self.player.points,0)
     
     def test_negative_reset(self):
         self.player.hp=1
-        self.player.position_reset()
+        self.player.points=100
+        self.player.player_reset()
         self.assertEqual(self.player.x,100)
+        self.assertEqual(self.player.y,100)
+        self.assertEqual(self.player.hp,1)
+        self.assertEqual(self.player.points,100)
+    
+#=================testy przeciwnika ==================#
+class EnemyTestInit(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.enemy = Enemy(x=50,y=200,hp=1,speed=3,damage=1)
+    
+    def test_enemy_start_position(self):
+        
+        self.assertEqual(self.enemy.x,50)
+        self.assertEqual(self.enemy.y,200)
+    
+    def test_enemy_health(self):
+        self.assertEqual(self.enemy.hp,1)
+
+    def test_enemy_speed(self):
+        self.assertEqual(self.enemy.speed,3)
+    
+    def test_enemy_damage(self):
+        self.assertEqual(self.enemy.damage,1)
+
+    def test_enemy_down(self):
+        self.enemy.hp=0
+        self.assertTrue(self.enemy.enemy_down())
+    
