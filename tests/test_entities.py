@@ -107,7 +107,7 @@ class PlayerTestInit(unittest.TestCase):
 class EnemyTestInit(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.enemy = Enemy(x=50,y=200,hp=1,speed=3,damage=1)
+        self.enemy = Enemy(x=50,y=200,hp=1,speed=3,damage=1,diraction=1)
     
     def test_enemy_start_position(self):
         
@@ -127,3 +127,54 @@ class EnemyTestInit(unittest.TestCase):
         self.enemy.hp=0
         self.assertTrue(self.enemy.enemy_down())
     
+    def test_enemy_move_right(self):
+        self.enemy.move_right()
+        self.assertEqual(self.enemy.x,53)
+    
+    def test_neg_move_right(self):
+        self.enemy.x=798
+        self.enemy.move_right()
+        self.assertEqual(self.enemy.x,798)
+
+    def test_enemy_move_left(self):
+        self.enemy.move_left()
+        self.assertEqual(self.enemy.x,47)
+    
+    def test_neg_move_left(self):
+        self.enemy.x=0
+        self.enemy.move_left()
+        self.assertEqual(self.enemy.x,0)
+    
+    def test_enemy_move_down(self):
+        self.enemy.move_down()
+        self.assertEqual(self.enemy.y,203)
+    
+    def test_neg_move_down(self):
+        self.enemy.y=798
+        self.enemy.move_down()
+        self.assertEqual(self.enemy.y,798)
+
+    def test_enemy_shoot(self):
+        bullet = self.enemy.shoot()
+        self.assertIsInstance(bullet,Bullet)
+
+    def test_neg_shoot(self):
+        self.enemy.hp=0
+        bullet = self.enemy.shoot()
+        self.assertIsNone(bullet)
+    
+    def test_enemy_move_diraction_right(self):
+        self.enemy.diraction=1
+        self.enemy.diraction_change()
+        self.assertEqual(self.enemy.x,53)
+
+    def test_enemy_move_diraction_left(self):
+        self.enemy.diraction=-1
+        self.enemy.diraction_change()
+        self.assertEqual(self.enemy.x,47)
+
+    def test_dead_enemy_diraction_change(self):
+        self.enemy.hp=0
+        self.enemy.diraction=1
+        self.enemy.diraction_change()
+        self.assertEqual(self.enemy.x,50)

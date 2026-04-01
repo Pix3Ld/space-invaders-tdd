@@ -1,7 +1,12 @@
+
+
 class Player():
     '''player basic logic'''
 
-    def __init__(self,x,y,hp,speed,points,screen_width=800) -> None:
+    def __init__(self,
+                 x, y, 
+                 hp,speed,
+                 points,screen_width=800) -> None:
         
         self.x = x
         self.y = y
@@ -32,7 +37,12 @@ class Player():
             self.hp -= dmg
     
     def shoot(self) -> "Bullet | None":
-        return Bullet(x=self.x,y=self.y,speed=10,damage=1,direction='up',owner=self) if self.is_alive() else None
+        return Bullet(x=self.x,
+                      y=self.y,
+                      speed=10,
+                      damage=1,
+                      direction='up',
+                      owner=self) if self.is_alive() else None
     
     def player_reset(self):
         if not self.is_alive():
@@ -48,7 +58,10 @@ class Player():
 class Bullet():
 
     '''bullet basic logic'''
-    def __init__(self,x,y,speed,damage,direction,owner) -> None:
+    def __init__(self,
+                 x,y,
+                 speed,damage,
+                 direction,owner) -> None:
         self.x = x
         self.y = y
         self.speed = speed
@@ -58,12 +71,39 @@ class Bullet():
 
 class Enemy():
     '''enemy basic logic'''
-    def __init__(self,x,y,hp,speed,damage=1) -> None:
+    def __init__(self,x,y,hp,speed,diraction,damage=1,screen_width=800,screen_hight=800) -> None:
         self.x = x
         self.y = y
         self.hp = hp
         self.speed = speed
         self.damage = damage
+        self.screen_width = screen_width
+        self.screen_hight = screen_hight
+        self.diraction=diraction
         
     def enemy_down(self) -> bool:
         return self.hp <= 0
+    
+    def move_right(self):
+        if self.x + self.speed <= self.screen_width:
+            self.x += self.speed
+    
+    def move_left(self):
+        if self.x - self.speed >=0:
+            self.x -= self.speed
+    
+    def move_down(self):
+        if self.y + self.speed <= self.screen_hight:
+            self.y += self.speed 
+    
+    def shoot(self) -> "Bullet | None":
+        return Bullet(x=self.x,y=self.y,
+                      speed=10,damage=1,
+                      direction='down',owner=self) if not self.enemy_down() else None
+
+    def diraction_change(self):
+        if not self.enemy_down():
+            if self.diraction==1:
+                self.move_right()
+            elif self.diraction==-1:
+                self.move_left()
