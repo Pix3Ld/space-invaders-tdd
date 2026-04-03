@@ -34,7 +34,7 @@ class Player():
 
     def take_damage(self,dmg):
         if self.is_alive():
-            self.hp -= dmg
+            self.hp = max(0,self.hp - dmg) 
     
     def shoot(self) -> "Bullet | None":
         return Bullet(x=self.x,
@@ -107,3 +107,18 @@ class Enemy():
                 self.move_right()
             elif self.diraction==-1:
                 self.move_left()
+
+class Barrier():
+    
+    def __init__(self,x,y,hp,width,height) -> None:
+        self.x = x
+        self.y = y
+        self.hp = hp
+        self.width = width
+        self.height = height
+    
+    def is_destroyed(self) -> bool:
+        return self.hp <= 0
+    def take_damage(self,dmg):
+        if not self.is_destroyed():
+            self.hp = max(0,self.hp - dmg)

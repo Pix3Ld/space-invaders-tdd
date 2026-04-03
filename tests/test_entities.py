@@ -1,6 +1,6 @@
 import unittest 
 
-from game.entities import Player, Bullet, Enemy
+from game.entities import Player, Bullet, Enemy , Barrier
 
 class PlayerTestInit(unittest.TestCase):
 
@@ -178,3 +178,51 @@ class EnemyTestInit(unittest.TestCase):
         self.enemy.diraction=1
         self.enemy.diraction_change()
         self.assertEqual(self.enemy.x,50)
+
+class TestBarierInit(unittest.TestCase):
+    def setUp(self):
+        self.barrier = Barrier(x=200, y=400, hp=3, width=50, height=20)
+
+    def test_barrier_initial_position(self):
+        self.assertEqual(self.barrier.x, 200)
+        self.assertEqual(self.barrier.y, 400)
+
+    def test_barrier_initial_hp(self):
+        self.assertEqual(self.barrier.hp, 3)
+
+    def test_barrier_is_not_destroyed(self):
+        self.assertFalse(self.barrier.is_destroyed())
+    
+    def test_barrier_is_destroyed(self):
+        self.barrier.hp = 0
+        self.assertTrue(self.barrier.is_destroyed())
+
+    def test_barrier_take_damage(self):
+        self.barrier.take_damage(1)
+        self.assertEqual(self.barrier.hp, 2)
+    
+    def test_barrier_take_damage_when_destroyed(self):
+        self.barrier.hp = 0
+        self.barrier.take_damage(1)
+        self.assertEqual(self.barrier.hp, 0)  
+
+    def test_barrier_size(self):
+        self.assertEqual(self.barrier.width, 50)
+        self.assertEqual(self.barrier.height, 20)
+from parameterized import parameterized
+
+class TestPlayerParameterized(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.player = Player(x=100,y=100,hp=3,speed=5,points=0,screen_width=800)
+
+    @parameterized.expand([
+        (1, 2),
+        (2, 1),
+        (3, 0),
+        (4, 0)
+    ])
+    def test_player_take_damage_parameterized(self, damage, expected_hp):
+        self.player.hp = 3
+        self.player.take_damage(damage)
+        self.assertEqual(self.player.hp, expected_hp)
