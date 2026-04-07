@@ -15,3 +15,13 @@ class GameState():
         if self.state == 0:
             self.state = 2
     
+class WaveMenager():
+    def __init__(self,enemies) -> None:
+        self.enemies = enemies
+        self.direction = 1 # 1 - right, -1 - left
+
+    def move(self): # zmienia ruch wroga samodzielnie w zależności od kierunku 
+        for enemy in self.enemies:
+            enemy.direction = self.direction
+            enemy.direction_change()
+     

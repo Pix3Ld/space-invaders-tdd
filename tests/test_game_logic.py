@@ -1,6 +1,6 @@
 import unittest
-from game.game_logic import GameState
-from game.entities import Player
+from game.game_logic import GameState,WaveMenager
+from game.entities import Player ,Enemy
 class TestGameState(unittest.TestCase):
     '''
         game states:
@@ -36,3 +36,35 @@ class TestGameState(unittest.TestCase):
     def test_neg_game_restart(self):
         self.game.game_restart()
         self.assertEqual(self.game.state,1)
+
+class TestWaveMenager(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.enemies=[
+            Enemy(x=100,y=100,hp=1,speed=5,screen_width=800),
+            Enemy(x=200,y=100,hp=1,speed=5,screen_width=800),
+            Enemy(x=100,y=200,hp=1,speed=5,screen_width=800),
+            Enemy(x=200,y=200,hp=1,speed=5,screen_width=800)
+        ]
+        self.wave = WaveMenager(enemies=self.enemies)
+    
+    def test_wave_has_four_enemies(self):
+        self.assertEqual(len(self.wave.enemies),4)
+    
+    def test_wave_direction(self):
+        self.assertEqual(self.wave.direction,1)
+    
+    def test_enemy_right_movement(self):
+        self.wave.move()
+        self.assertEqual(self.wave.enemies[0].x,105)
+        self.assertEqual(self.wave.enemies[1].x,205)
+        self.assertEqual(self.wave.enemies[2].x,105)
+        self.assertEqual(self.wave.enemies[3].x,205)
+    
+    def test_enemy_left_movement(self):
+        self.wave.direction = -1
+        self.wave.move()
+        self.assertEqual(self.wave.enemies[0].x,95)
+        self.assertEqual(self.wave.enemies[1].x,195)
+        self.assertEqual(self.wave.enemies[2].x,95)
+        self.assertEqual(self.wave.enemies[3].x,195)

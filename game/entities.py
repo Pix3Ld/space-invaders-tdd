@@ -71,7 +71,7 @@ class Bullet():
 
 class Enemy():
     '''enemy basic logic'''
-    def __init__(self,x,y,hp,speed,diraction,damage=1,screen_width=800,screen_hight=800) -> None:
+    def __init__(self,x,y,hp,speed,direction =1,damage=1,screen_width=800,screen_hight=800) -> None:
         self.x = x
         self.y = y
         self.hp = hp
@@ -79,7 +79,7 @@ class Enemy():
         self.damage = damage
         self.screen_width = screen_width
         self.screen_hight = screen_hight
-        self.diraction=diraction
+        self.direction =direction 
         
     def enemy_down(self) -> bool:
         return self.hp <= 0
@@ -101,11 +101,11 @@ class Enemy():
                       speed=10,damage=1,
                       direction='down',owner=self) if not self.enemy_down() else None
 
-    def diraction_change(self):
+    def direction_change(self):
         if not self.enemy_down():
-            if self.diraction==1:
+            if self.direction ==1:
                 self.move_right()
-            elif self.diraction==-1:
+            elif self.direction ==-1:
                 self.move_left()
 
 class Barrier():

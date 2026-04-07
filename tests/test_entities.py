@@ -107,7 +107,7 @@ class PlayerTestInit(unittest.TestCase):
 class EnemyTestInit(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.enemy = Enemy(x=50,y=200,hp=1,speed=3,damage=1,diraction=1)
+        self.enemy = Enemy(x=50,y=200,hp=1,speed=3,damage=1,direction =1)
     
     def test_enemy_start_position(self):
         
@@ -164,19 +164,19 @@ class EnemyTestInit(unittest.TestCase):
         self.assertIsNone(bullet)
     
     def test_enemy_move_diraction_right(self):
-        self.enemy.diraction=1
-        self.enemy.diraction_change()
+        self.enemy.direction =1
+        self.enemy.direction_change()
         self.assertEqual(self.enemy.x,53)
 
     def test_enemy_move_diraction_left(self):
-        self.enemy.diraction=-1
-        self.enemy.diraction_change()
+        self.enemy.direction =-1
+        self.enemy.direction_change()
         self.assertEqual(self.enemy.x,47)
 
     def test_dead_enemy_diraction_change(self):
         self.enemy.hp=0
-        self.enemy.diraction=1
-        self.enemy.diraction_change()
+        self.enemy.direction =1
+        self.enemy.direction_change()
         self.assertEqual(self.enemy.x,50)
 
 class TestBarierInit(unittest.TestCase):
