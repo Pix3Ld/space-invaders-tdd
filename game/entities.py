@@ -1,5 +1,3 @@
-
-
 class Player():
     '''player basic logic'''
 
@@ -41,7 +39,7 @@ class Player():
                       y=self.y,
                       speed=10,
                       damage=1,
-                      direction='up',
+                      direction=1,
                       owner=self) if self.is_alive() else None
     
     def player_reset(self):
@@ -71,14 +69,14 @@ class Bullet():
 
 class Enemy():
     '''enemy basic logic'''
-    def __init__(self,x,y,hp,speed,direction =1,damage=1,screen_width=800,screen_hight=800) -> None:
+    def __init__(self,x,y,hp,speed,direction =1,damage=1,screen_width=800,screen_height=800) -> None:
         self.x = x
         self.y = y
         self.hp = hp
         self.speed = speed
         self.damage = damage
         self.screen_width = screen_width
-        self.screen_hight = screen_hight
+        self.screen_height = screen_height
         self.direction =direction 
         
     def enemy_down(self) -> bool:
@@ -93,13 +91,13 @@ class Enemy():
             self.x -= self.speed
     
     def move_down(self):
-        if self.y + self.speed <= self.screen_hight:
+        if self.y + self.speed <= self.screen_height:
             self.y += self.speed 
     
     def shoot(self) -> "Bullet | None":
         return Bullet(x=self.x,y=self.y,
                       speed=10,damage=1,
-                      direction='down',owner=self) if not self.enemy_down() else None
+                      direction=-1,owner=self) if not self.enemy_down() else None
 
     def direction_change(self):
         if not self.enemy_down():

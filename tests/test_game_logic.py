@@ -41,10 +41,10 @@ class TestWaveMenager(unittest.TestCase):
 
     def setUp(self) -> None:
         self.enemies=[
-            Enemy(x=100,y=100,hp=1,speed=5,screen_width=800),
-            Enemy(x=200,y=100,hp=1,speed=5,screen_width=800),
-            Enemy(x=100,y=200,hp=1,speed=5,screen_width=800),
-            Enemy(x=200,y=200,hp=1,speed=5,screen_width=800)
+            Enemy(x=100,y=100,hp=1,speed=5,screen_width=800,screen_height=800),
+            Enemy(x=200,y=100,hp=1,speed=5,screen_width=800,screen_height=800),
+            Enemy(x=100,y=200,hp=1,speed=5,screen_width=800,screen_height=800),
+            Enemy(x=200,y=200,hp=1,speed=5,screen_width=800,screen_height=800)
         ]
         self.wave = WaveMenager(enemies=self.enemies)
     
@@ -68,3 +68,23 @@ class TestWaveMenager(unittest.TestCase):
         self.assertEqual(self.wave.enemies[1].x,195)
         self.assertEqual(self.wave.enemies[2].x,95)
         self.assertEqual(self.wave.enemies[3].x,195)
+
+    def test_wave_direction_changes_at_right_edge(self):
+        for enemy in self.enemies:
+            enemy.x = 800
+        self.wave.move()
+        self.assertEqual(self.wave.direction, -1)  # kierunek zmieniony
+
+    def test_wave_direction_changes_at_left_edge(self):
+        self.wave.direction = -1
+        for enemy in self.enemies:
+            enemy.x = 0
+        self.wave.move()
+        self.assertEqual(self.wave.direction, 1)  # kierunek zmieniony
+
+    def test_wave_moves_down_at_edge(self):
+        for enemy in self.enemies:
+            enemy.x = 797
+        old_y = self.enemies[0].y
+        self.wave.move()
+        self.assertEqual(self.enemies[0].y, old_y + 5)

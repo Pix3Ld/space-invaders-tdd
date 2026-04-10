@@ -84,6 +84,11 @@ class PlayerTestInit(unittest.TestCase):
         bullet = self.player.shoot()
         self.assertIsNotNone(bullet)
         self.assertEqual(bullet.owner,self.player)  # type: ignore
+    
+    def test_bullet_diraction(self):
+        bullet = self.player.shoot()
+        self.assertIsNotNone(bullet)
+        self.assertEqual(bullet.direction,1)  # type: ignore
 
 #=================testy resetu ==================#
     def test_player_reset(self):
@@ -126,12 +131,12 @@ class EnemyTestInit(unittest.TestCase):
     def test_enemy_down(self):
         self.enemy.hp=0
         self.assertTrue(self.enemy.enemy_down())
-    
+#=================testy ruchu przeciwnika ==================#
     def test_enemy_move_right(self):
         self.enemy.move_right()
         self.assertEqual(self.enemy.x,53)
     
-    def test_neg_move_right(self):
+    def test_enemy_neg_move_right(self):
         self.enemy.x=798
         self.enemy.move_right()
         self.assertEqual(self.enemy.x,798)
@@ -140,7 +145,7 @@ class EnemyTestInit(unittest.TestCase):
         self.enemy.move_left()
         self.assertEqual(self.enemy.x,47)
     
-    def test_neg_move_left(self):
+    def test_enemy_neg_move_left(self):
         self.enemy.x=0
         self.enemy.move_left()
         self.assertEqual(self.enemy.x,0)
@@ -153,16 +158,26 @@ class EnemyTestInit(unittest.TestCase):
         self.enemy.y=798
         self.enemy.move_down()
         self.assertEqual(self.enemy.y,798)
-
+#=================testy strzelania przeciwnika ==================#
     def test_enemy_shoot(self):
         bullet = self.enemy.shoot()
         self.assertIsInstance(bullet,Bullet)
 
-    def test_neg_shoot(self):
+    def test_enemy_neg_shoot(self):
         self.enemy.hp=0
         bullet = self.enemy.shoot()
         self.assertIsNone(bullet)
     
+    def test_enemy_bullet_owner(self):
+        bullet = self.enemy.shoot()
+        self.assertIsNotNone(bullet)
+        self.assertEqual(bullet.owner,self.enemy)  # type: ignore
+    
+    def test_enemy_bullet_diraction(self):
+        bullet = self.enemy.shoot()
+        self.assertIsNotNone(bullet)
+        self.assertEqual(bullet.direction,-1)  # type: ignore
+#=================testy zmiany kierunku przeciwnika ==================#
     def test_enemy_move_diraction_right(self):
         self.enemy.direction =1
         self.enemy.direction_change()
@@ -180,6 +195,7 @@ class EnemyTestInit(unittest.TestCase):
         self.assertEqual(self.enemy.x,50)
 
 class TestBarierInit(unittest.TestCase):
+#=================testy bariery ==================#
     def setUp(self):
         self.barrier = Barrier(x=200, y=400, hp=3, width=50, height=20)
 
@@ -209,6 +225,7 @@ class TestBarierInit(unittest.TestCase):
     def test_barrier_size(self):
         self.assertEqual(self.barrier.width, 50)
         self.assertEqual(self.barrier.height, 20)
+
 from parameterized import parameterized
 
 class TestPlayerParameterized(unittest.TestCase):
