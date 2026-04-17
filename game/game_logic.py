@@ -1,4 +1,5 @@
  # state: 0 - game_over, 1 - menu, 2 - started
+import os 
 class GameState():
     def __init__(self,state,player) -> None:
         self.state = state
@@ -36,3 +37,24 @@ class WaveMenager():
         for enemy in self.enemies:
             enemy.direction = self.direction
             enemy.direction_change()
+
+class ScoreManager():
+    
+    def __init__(self,filename,player,current_score=0,high_score=0) -> None:
+        self.filename=filename
+        self.current_score=current_score
+        self.high_score=high_score
+    
+    def add_points(self,points):
+        self.current_score += points
+            
+    def reset(self):
+        self.current_score = 0
+    def save(self):
+        if self.current_score > self.high_score:
+            with open(self.filename, 'w') as f:
+                f.write(str(self.current_score))
+
+    def load(self):
+        with open(self.filename, 'r') as f:
+            return int(f.read())

@@ -1,6 +1,8 @@
+import os
 import unittest
-from game.game_logic import GameState,WaveMenager
+from game.game_logic import GameState,WaveMenager,ScoreManager
 from game.entities import Player ,Enemy
+
 class TestGameState(unittest.TestCase):
     '''
         game states:
@@ -88,3 +90,35 @@ class TestWaveMenager(unittest.TestCase):
         old_y = self.enemies[0].y
         self.wave.move()
         self.assertEqual(self.enemies[0].y, old_y + 5)
+
+
+class TestScoreManager(unittest.TestCase):
+
+    def setUp(self):
+        self.score = ScoreManager(filename="test_scores.txt",player=Player(x=100,y=100,hp=1,speed=5,points=0))
+    
+    def tearDown(self):
+        if os.path.exists("test_scores.txt"):
+            os.remove("test_scores.txt")
+
+    def test_initial_score_is_zero(self):
+        
+        self.assertEqual(self.score.current_score, 0)
+
+    def test_add_points(self):
+        
+        self.score.add_points(100)
+        self.assertEqual(self.score.current_score, 100)
+
+    def test_reset_score(self):
+        
+        self.score.add_points(100)
+        self.score.reset()
+        self.assertEqual(self.score.current_score, 0)
+
+    def test_save_and_load_high_score(self):
+
+        self.score.add_points(500)
+        self.score.save()
+        loaded = self.score.load()
+        self.assertEqual(loaded, 500)
