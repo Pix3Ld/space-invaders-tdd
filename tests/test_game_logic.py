@@ -1,7 +1,7 @@
 import os
 import unittest
-from game.game_logic import GameState,WaveMenager,ScoreManager
-from game.entities import Player ,Enemy
+from game.game_logic import GameState,WaveMenager,ScoreManager,CollisionHandler
+from game.entities import Player ,Enemy,Bullet,Barrier
 
 class TestGameState(unittest.TestCase):
     '''
@@ -95,7 +95,7 @@ class TestWaveMenager(unittest.TestCase):
 class TestScoreManager(unittest.TestCase):
 
     def setUp(self):
-        self.score = ScoreManager(filename="test_scores.txt",player=Player(x=100,y=100,hp=1,speed=5,points=0))
+        self.score = ScoreManager(filename="test_scores.txt")
     
     def tearDown(self):
         if os.path.exists("test_scores.txt"):
@@ -122,3 +122,29 @@ class TestScoreManager(unittest.TestCase):
         self.score.save()
         loaded = self.score.load()
         self.assertEqual(loaded, 500)
+        
+    def test_load_returns_zero_when_no_file(self):
+        loaded = self.score.load()
+        self.assertEqual(loaded, 0)
+
+class TestCollisionHandler(unittest.TestCase):
+
+    def setUp(self):
+        self.handler = CollisionHandler()
+        self.player = Player(x=100, y=500, hp=3, speed=5, points=0)
+        self.enemy = Enemy(x=100, y=500, hp=1, speed=3)
+        self.bullet = Bullet(x=100, y=500, speed=10, damage=1, direction=1, owner=self.player)
+        self.barrier = Barrier(x=100, y=400, hp=3, width=50, height=20)
+
+    def test_bullet_hits_enemy(self):
+        result = self.handler.bullet_hits_entity(self.bullet, self.enemy)
+        self.assertTrue(result)
+
+    def test_bullet_misses_enemy(self):
+        self.bullet.x = 999
+        result = self.handler.bullet_hits_entity(self.bullet, self.enemy)
+        self.assertFalse(result)
+    
+    def test_bullet_hits_player(self):
+        outcome = self.handler.bullet_hits_entity(self.bullet,self.player)
+        self.assertTrue(outcome)

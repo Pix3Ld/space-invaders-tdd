@@ -1,12 +1,5 @@
-pygame-ce space invaders 
-z unittestami oraz black  
+pygame-ce space invaders  
 
-
-## 2. Sposób bieżącej kontroli wyników nauczania
-
-Na zakończenie (i zaliczenie) zajęć do wykonania będzie projekt zaliczeniowy i jego obrona.
-Możliwa jest dodatkowa odpytka w celu wyjaśnienia wątpliwości co do samodzielności wykonania
-pracy. Zalecane jest dobrze znać swój projekt :)
 
 ### 3.1 Aplikacja
 
@@ -21,7 +14,8 @@ konsekwetnie. Jej stosowanie nie jest obowiązkowe.
 
 ### 3.2 Testy jednostkowe
 
-1. Testy należy zaimplementować przy użyciu bibliotek omawianach na ćwiczeniach.
+1. Testy należy zaimplementować przy użyciu bibliotek omawianach na ćwiczeniach
+   sprawdź repo - https://github.com/AdrianAlbrecht/Fakultet26L.
 2. Łącznie należy stworzyć ok. 100-150 różnorodnych testów.
 3. Należy zastosować minimum 5 różnych rodzajów asercji.
 4. Wymagane jest użycie parametryzacji testów.
@@ -66,38 +60,22 @@ projekt/
 ```
 
 
-## 5. Przykładowe tematy aplikacji
+## 5.  temat: space invaders
 
-1. System zarządzania biblioteką.
-2. Aplikacja do zarządzania zadaniami (todo list).
-3. Prosty system bankowy.
-4. Kalkulator z zaawansowanymi funkcjami.
-5. Parser danych w określonym formacie (CSV, JSON, XML).
-6. Gra tekstowa.
-7. System rezerwacji (hoteli, biletów, etc.).
-8. API do konwersji walut.
 
-Można oczywiście swoje aplikacje.
+## wskaźnik tego co można użyć w projekcie
 
-Przykładowy projekt od [Pana Doktora Jastrzębskiego](https://github.com/pjastr/PFsample), który jest zdecydowanie mniejszą skalą niżli projekt do wykonania na zaliczenie przedmiotu - **proszę zwracać uwagę na wymagania co do zaliczenia!!!!**
+TDD w unittest
+Analiza statyczna, wyrażenia regularne
+Atrapy obiektów (mock) w testowaniu modułowym
+Pokrycie kodu (moduł coverage)
+Techniki testowania
+Moduł pytest 
+Moduł pytest-bdd
+Analiza wartości brzegowych
+Przejścia miedzy stanami
 
-## Prawdopodobny rozkład zajęć (wskaźnik tego co można użyć w projekcie)
 
-1. 25.02: Sylabus. Wprowadzenie do unittest cz. 1.
-2. 04.03: Wprowadzenie do unittest cz. 2 - dokańczanie zadań.
-3. 11.03: TDD w unittest
-4. 18.03: Analiza statyczna, wyrażenia regularne
-5. 25.03: Atrapy obiektów (mock) w testowaniu modułowym
-6. 01.04: Pokrycie kodu (moduł coverage)
-7. 15.04: Techniki testowania
-8. 22.04: Moduł pytest 
-9. 29.04: Moduł pytest-bdd
-10. 06.05: Analiza wartości brzegowych
-11. 13.05: Przejścia miedzy stanami
-12. 20.05: Praca nad projektami cz. 1. Konsultacje projektowe.
-13. 27.05: Praca nad projektami cz. 2. Konsultacje projektowe.
-14. 03.06: Obrona projektów cz. 1.
-15. 10.06: Obrona projektów cz. 2.
 
 
 ## Literatura
