@@ -138,7 +138,7 @@ class GameEngine:
     screen_width = 800
     screen_height = 600
 
-    def __init__(self, score_filename: str = 'highscore.txt') -> None:
+    def __init__(self, score_filename: str = 'highscore.txt', asset_manager: Optional[Any] = None) -> None:
         self.player = Player(
             x=380,
             y=540,
@@ -154,6 +154,7 @@ class GameEngine:
         self.player_bullets: List[Bullet] = []
         self.enemy_bullets: List[Bullet] = []
         self.barriers = self.create_barriers()
+        self.asset_manager = asset_manager
         self.score.load()
 
     def spawn_wave(self) -> List[Enemy]:
@@ -187,13 +188,15 @@ class GameEngine:
         barrier_y = 470
         barrier_width = 80
         barrier_height = 30
-        gap = 200
-        x_start = 120
+        gap = 140
+        num_barriers = 4
+        total_width = num_barriers * barrier_width + (num_barriers - 1) * gap
+        x_start = (self.screen_width - total_width) // 2
 
-        for index in range(3):
+        for index in range(num_barriers):
             barriers.append(
                 Barrier(
-                    x=x_start + index * gap,
+                    x=x_start + index * (barrier_width + gap),
                     y=barrier_y,
                     hp=6,
                     width=barrier_width,
@@ -258,28 +261,51 @@ class GameEngine:
                     if enemy.enemy_down():
                         self.player.add_points(100)
                         self.score.add_points(100)
+                        if self.asset_manager:
+                            self.asset_manager.play_sound('hit')
                     break
 
             for barrier in self.barriers:
-                if bullet in self.player_bullets and self.collision.bullet_hits_entity(bullet, barrier):
+                if not barrier.is_destroyed() and bullet in self.player_bullets and self.collision.bullet_hits_entity(bullet, barrier):
                     barrier.take_damage(bullet.damage)
                     if bullet in self.player_bullets:
                         self.player_bullets.remove(bullet)
+                    if barrier.is_destroyed() and self.asset_manager:
+                        self.asset_manager.play_sound('enemy_down')
                     break
 
         for bullet in list(self.enemy_bullets):
+            # Check collision with player
             if self.collision.bullet_hits_entity(bullet, self.player):
                 self.player.take_damage(bullet.damage)
                 if bullet in self.enemy_bullets:
                     self.enemy_bullets.remove(bullet)
+                if not self.player.is_alive():
+                    self.state.game_over()  # Immediately end game when player dies
+                    if self.asset_manager:
+                        self.asset_manager.play_sound('gameover')
                 continue
 
+            # Check collision with barriers (skip destroyed)
             for barrier in self.barriers:
-                if self.collision.bullet_hits_entity(bullet, barrier):
+                if not barrier.is_destroyed() and self.collision.bullet_hits_entity(bullet, barrier):
                     barrier.take_damage(bullet.damage)
                     if bullet in self.enemy_bullets:
                         self.enemy_bullets.remove(bullet)
+                    if barrier.is_destroyed() and self.asset_manager:
+                        self.asset_manager.play_sound('enemy_down')
                     break
+        
+        # Check collision between enemies and player (alien invasion)
+        if not self.player.is_alive():
+            return
+        
+        for enemy in self.wave.enemies:
+            if not enemy.enemy_down() and self.collision.bullet_hits_entity(enemy, self.player):
+                self.player.take_damage(1)
+                if not self.player.is_alive() and self.asset_manager:
+                    self.asset_manager.play_sound('gameover')
+                break
 
     def update(self) -> None:
         """Update game state each frame."""
@@ -301,9 +327,16 @@ class GameEngine:
 
     def check_game_over(self) -> None:
         """Check if game over condition is met."""
-        if any(enemy.y + enemy.height >= self.player.y for enemy in self.wave.enemies if not enemy.enemy_down()):
+        # Check if player is dead
+        if not self.player.is_alive():
             self.state.game_over()
-        self.state.game_over()
+        
+        # Check if any alive enemy reached the bottom
+        for enemy in self.wave.enemies:
+            if not enemy.enemy_down() and enemy.y + enemy.height >= self.player.y:
+                self.state.game_over()
+                break
+        
         if self.state.state == 0:
             self.score.save()
 

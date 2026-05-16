@@ -510,7 +510,7 @@ class TestGameEngine(unittest.TestCase):
         self.assertGreater(len(self.engine.wave.enemies), 0)
 
     def test_engine_barriers_created(self) -> None:
-        self.assertEqual(len(self.engine.barriers), 3)
+        self.assertEqual(len(self.engine.barriers), 4)
 
     def test_engine_check_level_completion(self) -> None:
         for enemy in self.engine.wave.enemies:

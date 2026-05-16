@@ -1,6 +1,5 @@
 """Asset manager for Space Invaders game."""
 
-import os
 from pathlib import Path
 from typing import Optional
 
@@ -18,66 +17,71 @@ class AssetManager:
         self.images: dict = {}
         self.sounds: dict = {}
         
+        # Ensure pygame mixer is initialized
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
+        
         self._create_directories()
-        self._generate_assets()
         self._load_assets()
+        # Generate fallback assets if loading found nothing
+        if not self.images or not self.sounds:
+            self._generate_fallback_assets()
+            self._load_assets()  # Reload after generating fallbacks
 
     def _create_directories(self) -> None:
         """Create asset directories if they don't exist."""
         self.images_dir.mkdir(parents=True, exist_ok=True)
         self.audio_dir.mkdir(parents=True, exist_ok=True)
 
-    def _generate_assets(self) -> None:
-        """Generate asset files if they don't exist."""
-        self._generate_graphics()
-        self._generate_sounds()
+    def _generate_fallback_assets(self) -> None:
+        """Generate fallback assets if none are found (for testing)."""
+        # Generate fallback images only if no PNG files exist
+        if not any(self.images_dir.glob('*.png')):
+            try:
+                from PIL import Image, ImageDraw
+                
+                # Player sprite (green arrow)
+                img = Image.new('RGBA', (40, 20), (0, 0, 0, 0))
+                draw = ImageDraw.Draw(img)
+                draw.polygon([(0, 0), (40, 0), (20, 20)], fill=(0, 200, 40, 255))
+                img.save(self.images_dir / 'player.png')
 
-    def _generate_graphics(self) -> None:
-        """Generate PNG graphics for game entities."""
-        try:
-            from PIL import Image, ImageDraw
-        except ImportError:
-            return
+                # Enemy sprite (red square)
+                img = Image.new('RGBA', (36, 24), (200, 50, 50, 255))
+                img.save(self.images_dir / 'enemy.png')
 
-        # Player sprite (green arrow)
-        if not (self.images_dir / 'player.png').exists():
-            img = Image.new('RGBA', (40, 20), (0, 0, 0, 0))
-            draw = ImageDraw.Draw(img)
-            draw.polygon([(0, 0), (40, 0), (20, 20)], fill=(0, 200, 40, 255))
-            img.save(self.images_dir / 'player.png')
+                # Barrier sprite (blue block)
+                img = Image.new('RGBA', (80, 30), (100, 150, 200, 255))
+                img.save(self.images_dir / 'barrier.png')
 
-        # Enemy sprite (red square)
-        if not (self.images_dir / 'enemy.png').exists():
-            img = Image.new('RGBA', (36, 24), (200, 50, 50, 255))
-            img.save(self.images_dir / 'enemy.png')
+                # Bullet sprite (yellow dot)
+                img = Image.new('RGBA', (4, 10), (255, 255, 0, 255))
+                img.save(self.images_dir / 'bullet.png')
+            except ImportError:
+                pass
+        
+        # Generate fallback sounds only if no audio files exist
+        if not any(list(self.audio_dir.glob('*.wav')) + list(self.audio_dir.glob('*.ogg'))):
+            self._create_fallback_sounds()
 
-        # Barrier sprite (blue block)
-        if not (self.images_dir / 'barrier.png').exists():
-            img = Image.new('RGBA', (80, 30), (100, 150, 200, 255))
-            img.save(self.images_dir / 'barrier.png')
-
-        # Bullet sprite (yellow dot)
-        if not (self.images_dir / 'bullet.png').exists():
-            img = Image.new('RGBA', (4, 10), (255, 255, 0, 255))
-            img.save(self.images_dir / 'bullet.png')
-
-    def _generate_sounds(self) -> None:
-        """Generate WAV sound files."""
+    def _create_fallback_sounds(self) -> None:
+        """Generate fallback sound files if none exist."""
         try:
             import wave
             import struct
+            import math
         except ImportError:
             return
 
-        # Shoot sound (beep)
+        # Shoot sound
         if not (self.audio_dir / 'shoot.wav').exists():
             self._create_beep_sound(self.audio_dir / 'shoot.wav', frequency=800, duration=0.1)
 
-        # Hit sound (higher beep)
+        # Hit sound
         if not (self.audio_dir / 'hit.wav').exists():
             self._create_beep_sound(self.audio_dir / 'hit.wav', frequency=1200, duration=0.2)
 
-        # Game over sound (descending)
+        # Game over sound
         if not (self.audio_dir / 'gameover.wav').exists():
             self._create_descending_sound(self.audio_dir / 'gameover.wav')
 
@@ -98,7 +102,7 @@ class AssetManager:
             sample = int(32767 * 0.5 * math.sin(2 * math.pi * frequency * i / sample_rate))
             wave_data.append(struct.pack('<h', sample))
 
-        with wave.open(filepath, 'wb') as wav_file:
+        with wave.open(str(filepath), 'wb') as wav_file:
             wav_file.setnchannels(1)
             wav_file.setsampwidth(2)
             wav_file.setframerate(sample_rate)
@@ -125,7 +129,7 @@ class AssetManager:
             sample = int(32767 * 0.5 * math.sin(2 * math.pi * frequency * i / sample_rate))
             wave_data.append(struct.pack('<h', sample))
 
-        with wave.open(filepath, 'wb') as wav_file:
+        with wave.open(str(filepath), 'wb') as wav_file:
             wav_file.setnchannels(1)
             wav_file.setsampwidth(2)
             wav_file.setframerate(sample_rate)
@@ -137,28 +141,60 @@ class AssetManager:
         self._load_sounds()
 
     def _load_images(self) -> None:
-        """Load PNG images."""
-        image_files = ['player.png', 'enemy.png', 'barrier.png', 'bullet.png']
+        """Load PNG images from images directory and map to game entities."""
+        if not self.images_dir.exists():
+            return
         
-        for filename in image_files:
-            filepath = self.images_dir / filename
-            if filepath.exists():
-                try:
-                    self.images[filename.replace('.png', '')] = pygame.image.load(filepath)
-                except (pygame.error, FileNotFoundError):
-                    pass
+        # Load all PNG files from images directory
+        for img_path in self.images_dir.glob('*.png'):
+            try:
+                name = img_path.stem  # filename without extension
+                self.images[name] = pygame.image.load(str(img_path))
+            except (pygame.error, FileNotFoundError):
+                pass
+        
+        # Map specific files to game entity names if they exist
+        name_mapping = {
+            'gracz': 'player',
+            'alien1rzad': 'enemy',
+            'alien2rzad': 'barrier',
+            'alien3rzad': 'barrier2',
+        }
+        
+        for source_name, target_name in name_mapping.items():
+            if source_name in self.images and target_name not in self.images:
+                self.images[target_name] = self.images[source_name]
 
     def _load_sounds(self) -> None:
-        """Load WAV sounds."""
-        sound_files = ['shoot.wav', 'hit.wav', 'gameover.wav']
+        """Load WAV/OGG sounds from audio directory."""
+        if not self.audio_dir.exists():
+            return
         
-        for filename in sound_files:
-            filepath = self.audio_dir / filename
-            if filepath.exists():
-                try:
-                    self.sounds[filename.replace('.wav', '')] = pygame.mixer.Sound(filepath)
-                except (pygame.error, FileNotFoundError):
-                    pass
+        # Only try to load sounds if mixer is initialized
+        try:
+            if not pygame.mixer.get_init():
+                return
+        except Exception:
+            return
+        
+        # Load all WAV and OGG files from audio directory
+        for sound_path in list(self.audio_dir.glob('*.wav')) + list(self.audio_dir.glob('*.ogg')):
+            try:
+                name = sound_path.stem  # filename without extension
+                self.sounds[name] = pygame.mixer.Sound(str(sound_path))
+            except (pygame.error, FileNotFoundError):
+                pass
+        
+        # Map OGG files to game event names if available
+        sound_mapping = {
+            'game_over': 'gameover',
+            'enemy_down': 'hit',
+            'player_death': 'death',
+        }
+        
+        for source_name, target_name in sound_mapping.items():
+            if source_name in self.sounds and target_name not in self.sounds:
+                self.sounds[target_name] = self.sounds[source_name]
 
     def get_image(self, name: str) -> Optional[pygame.Surface]:
         """Get image by name."""

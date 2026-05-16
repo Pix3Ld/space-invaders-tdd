@@ -1,6 +1,7 @@
 import pygame
 from typing import Optional
 
+from game.assets_manager import AssetManager
 from game.entities import Barrier, Bullet, Enemy, Player
 from game.game_logic import GameEngine
 
@@ -13,12 +14,14 @@ class GameRenderer:
         screen: pygame.Surface,
         screen_width: int = 800,
         screen_height: int = 600,
+        assets: Optional[AssetManager] = None,
     ) -> None:
         self.screen = screen
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.font = pygame.font.Font(None, 36)
         self.small_font = pygame.font.Font(None, 24)
+        self.assets = assets
 
     def draw_text(
         self,
@@ -43,13 +46,45 @@ class GameRenderer:
         self.screen.blit(text, rect)
 
     def draw_entity(self, entity: object, color: tuple) -> None:
-        """Draw entity using rectangle method."""
-        if hasattr(entity, 'rectangle'):
-            try:
-                rect = pygame.Rect(entity.rectangle())#type: ignore
-                pygame.draw.rect(self.screen, color, rect)
-            except (TypeError, ValueError):
-                pass
+        """Draw entity using image or rectangle."""
+        if not hasattr(entity, 'rectangle'):
+            return
+
+        try:
+            rect_tuple = entity.rectangle()#type: ignore
+            rect = pygame.Rect(rect_tuple)
+        except (TypeError, ValueError):
+            return
+
+        # Try to draw with image if available
+        if self.assets:
+            if isinstance(entity, Player):
+                img = self.assets.get_image('player')
+                if img:
+                    scaled_img = pygame.transform.scale(img, (rect.width, rect.height))
+                    self.screen.blit(scaled_img, (rect.x, rect.y))
+                    return
+            elif isinstance(entity, Enemy):
+                img = self.assets.get_image('enemy')
+                if img:
+                    scaled_img = pygame.transform.scale(img, (rect.width, rect.height))
+                    self.screen.blit(scaled_img, (rect.x, rect.y))
+                    return
+            elif isinstance(entity, Barrier):
+                img = self.assets.get_image('barrier')
+                if img:
+                    scaled_img = pygame.transform.scale(img, (rect.width, rect.height))
+                    self.screen.blit(scaled_img, (rect.x, rect.y))
+                    return
+            elif isinstance(entity, Bullet):
+                img = self.assets.get_image('bullet')
+                if img:
+                    scaled_img = pygame.transform.scale(img, (rect.width, rect.height))
+                    self.screen.blit(scaled_img, (rect.x, rect.y))
+                    return
+
+        # Fallback to colored rectangles
+        pygame.draw.rect(self.screen, color, rect)
 
     def render_menu(self, engine: GameEngine) -> None:
         """Render main menu screen."""
