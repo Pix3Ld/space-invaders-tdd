@@ -116,11 +116,11 @@ class CollisionHandler:
 
     @staticmethod
     def rectangles_intersect(
-        rect_a: Tuple[int, int, int, int], rect_b: Tuple[int, int, int, int]
+        rect_a: Tuple[int, int, int, int], rect_b: Tuple[int, int, int, int] # tuple of (x, y, width, height)
     ) -> bool:
         """Check if two rectangles intersect."""
-        ax, ay, aw, ah = rect_a
-        bx, by, bw, bh = rect_b
+        ax, ay, aw, ah = rect_a # ax = x, ay = y, aw = width, ah = height
+        bx, by, bw, bh = rect_b # bx = x, by = y, bw = width, bh = height
         return ax < bx + bw and ax + aw > bx and ay < by + bh and ay + ah > by
 
     def bullet_hits_entity(self, bullet: Bullet, entity: Union[Player, Enemy, Barrier]) -> bool:
@@ -301,7 +301,7 @@ class GameEngine:
             return
         
         for enemy in self.wave.enemies:
-            if not enemy.enemy_down() and self.collision.bullet_hits_entity(enemy, self.player):
+            if not enemy.enemy_down() and self.collision.bullet_hits_entity(enemy, self.player): #type: ignore
                 self.player.take_damage(1)
                 if not self.player.is_alive() and self.asset_manager:
                     self.asset_manager.play_sound('gameover')
