@@ -1,6 +1,6 @@
 import os
 import unittest
-from game.game_logic import GameState,WaveMenager,ScoreManager,CollisionHandler
+from game.game_logic import GameState,WaveMenager,ScoreManager,CollisionHandler,GameEngine
 from game.entities import Player ,Enemy,Bullet,Barrier
 
 class TestGameState(unittest.TestCase):
@@ -126,6 +126,46 @@ class TestScoreManager(unittest.TestCase):
     def test_load_returns_zero_when_no_file(self):
         loaded = self.score.load()
         self.assertEqual(loaded, 0)
+
+class TestGameEngineReset(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.filename = 'test_engine_reset.txt'
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+        self.engine = GameEngine(score_filename=self.filename)
+
+    def tearDown(self) -> None:
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+
+    def test_reset_game_restores_player_and_state(self) -> None:
+        self.engine.start_game()
+        self.engine.player.x = 100
+        self.engine.player.y = 100
+        self.engine.player.hp = 0
+        self.engine.player.points = 123
+        self.engine.player_bullets.append(
+            Bullet(x=100, y=100, speed=10, damage=1, direction=1, owner=self.engine.player)
+        )
+        self.engine.enemy_bullets.append(
+            Bullet(x=200, y=100, speed=10, damage=1, direction=-1, owner=self.engine.player)
+        )
+        self.engine.wave.enemies[0].hp = 0
+        self.engine.state.state = 0
+
+        self.engine.reset_game()
+
+        self.assertEqual(self.engine.player.hp, self.engine.player.starting_hp)
+        self.assertEqual(self.engine.player.x, self.engine.player.starting_x)
+        self.assertEqual(self.engine.player.y, self.engine.player.starting_y)
+        self.assertEqual(self.engine.player.points, self.engine.player.starting_points)
+        self.assertEqual(self.engine.player_bullets, [])
+        self.assertEqual(self.engine.enemy_bullets, [])
+        self.assertEqual(len(self.engine.barriers), 4)
+        self.assertEqual(self.engine.state.state, 2)
+        self.assertEqual(self.engine.score.current_score, 0)
+        self.assertGreater(len(self.engine.wave.enemies), 0)
 
 class TestCollisionHandler(unittest.TestCase):
 

@@ -2,70 +2,15 @@ import os
 import unittest
 from parameterized import parameterized
 
-from game.entities import Player, Enemy, Bullet, Barrier
-from game.game_logic import GameState, WaveMenager, ScoreManager, CollisionHandler, GameEngine
+from game.entities import Player, Bullet, Barrier, Enemy
+from game.game_logic import CollisionHandler, GameEngine, ScoreManager, WaveMenager
 
 
-class TestPlayerBasics(unittest.TestCase):
-    """Test Player class basic functionality."""
+class TestPlayerAdditional(unittest.TestCase):
+    """Additional Player tests that do not duplicate entity coverage."""
 
     def setUp(self) -> None:
         self.player = Player(x=100, y=100, hp=3, speed=5, points=0, screen_width=800)
-
-    def test_player_initialization(self) -> None:
-        self.assertEqual(self.player.x, 100)
-        self.assertEqual(self.player.y, 100)
-        self.assertEqual(self.player.hp, 3)
-        self.assertEqual(self.player.speed, 5)
-        self.assertEqual(self.player.points, 0)
-
-    def test_player_is_alive_true(self) -> None:
-        self.assertTrue(self.player.is_alive())
-
-    def test_player_is_alive_false(self) -> None:
-        self.player.hp = 0
-        self.assertFalse(self.player.is_alive())
-
-    def test_player_move_left(self) -> None:
-        self.player.move_left()
-        self.assertEqual(self.player.x, 95)
-
-    def test_player_move_right(self) -> None:
-        self.player.move_right()
-        self.assertEqual(self.player.x, 105)
-
-    def test_player_move_left_boundary(self) -> None:
-        self.player.x = 0
-        self.player.move_left()
-        self.assertEqual(self.player.x, 0)
-
-    def test_player_move_right_boundary(self) -> None:
-        self.player.x = 800
-        self.player.move_right()
-        self.assertLessEqual(self.player.x, 800)
-
-    def test_player_take_damage(self) -> None:
-        self.player.take_damage(1)
-        self.assertEqual(self.player.hp, 2)
-
-    def test_player_take_damage_zero_hp(self) -> None:
-        self.player.hp = 0
-        self.player.take_damage(1)
-        self.assertEqual(self.player.hp, 0)
-
-    def test_player_take_damage_overkill(self) -> None:
-        self.player.take_damage(10)
-        self.assertEqual(self.player.hp, 0)
-
-    def test_player_shoot_alive(self) -> None:
-        bullet = self.player.shoot()
-        self.assertIsNotNone(bullet)
-        self.assertIsInstance(bullet, Bullet)
-
-    def test_player_shoot_dead(self) -> None:
-        self.player.hp = 0
-        bullet = self.player.shoot()
-        self.assertIsNone(bullet)
 
     def test_player_add_points(self) -> None:
         self.player.add_points(100)
@@ -76,13 +21,6 @@ class TestPlayerBasics(unittest.TestCase):
         self.player.add_points(50)
         self.assertEqual(self.player.points, 100)
 
-    def test_player_reset(self) -> None:
-        self.player.hp = 0
-        self.player.x = 500
-        self.player.player_reset()
-        self.assertEqual(self.player.hp, 3)
-        self.assertEqual(self.player.x, 100)
-
     def test_player_rectangle(self) -> None:
         rect = self.player.rectangle()
         self.assertEqual(len(rect), 4)
@@ -91,21 +29,10 @@ class TestPlayerBasics(unittest.TestCase):
 
 
 class TestPlayerParametrized(unittest.TestCase):
-    """Parametrized tests for Player."""
+    """Parametrized tests for Player add_points behavior."""
 
     def setUp(self) -> None:
         self.player = Player(x=100, y=100, hp=3, speed=5, points=0, screen_width=800)
-
-    @parameterized.expand([
-        (1, 2),
-        (2, 1),
-        (3, 0),
-        (5, 0),
-        (10, 0),
-    ])
-    def test_player_take_damage_values(self, damage: int, expected_hp: int) -> None:
-        self.player.take_damage(damage)
-        self.assertEqual(self.player.hp, expected_hp)
 
     @parameterized.expand([
         (10, 10),
@@ -130,109 +57,18 @@ class TestPlayerNegative(unittest.TestCase):
         with self.assertRaises(ValueError):
             Player(x=100, y=100, hp=3, speed=-1, points=0)
 
-    def test_player_take_damage_negative(self) -> None:
-        player = Player(x=100, y=100, hp=3, speed=5, points=0)
-        with self.assertRaises(ValueError):
-            player.take_damage(-1)
-
     def test_player_add_points_negative(self) -> None:
         player = Player(x=100, y=100, hp=3, speed=5, points=0)
         with self.assertRaises(ValueError):
             player.add_points(-10)
 
 
-class TestEnemyBasics(unittest.TestCase):
-    """Test Enemy class basic functionality."""
-
-    def setUp(self) -> None:
-        self.enemy = Enemy(x=50, y=200, hp=1, speed=3, damage=1)
-
-    def test_enemy_initialization(self) -> None:
-        self.assertEqual(self.enemy.x, 50)
-        self.assertEqual(self.enemy.y, 200)
-        self.assertEqual(self.enemy.hp, 1)
-        self.assertEqual(self.enemy.speed, 3)
-        self.assertEqual(self.enemy.damage, 1)
-
-    def test_enemy_is_down_true(self) -> None:
-        self.enemy.hp = 0
-        self.assertTrue(self.enemy.enemy_down())
-
-    def test_enemy_is_down_false(self) -> None:
-        self.assertFalse(self.enemy.enemy_down())
-
-    def test_enemy_move_right(self) -> None:
-        self.enemy.move_right()
-        self.assertEqual(self.enemy.x, 53)
-
-    def test_enemy_move_left(self) -> None:
-        self.enemy.move_left()
-        self.assertEqual(self.enemy.x, 47)
-
-    def test_enemy_move_down(self) -> None:
-        self.enemy.move_down()
-        self.assertEqual(self.enemy.y, 203)
-
-    def test_enemy_move_right_boundary(self) -> None:
-        self.enemy.x = 800
-        self.enemy.move_right()
-        self.assertEqual(self.enemy.x, 800)
-
-    def test_enemy_move_left_boundary(self) -> None:
-        self.enemy.x = 0
-        self.enemy.move_left()
-        self.assertEqual(self.enemy.x, 0)
-
-    def test_enemy_move_down_boundary(self) -> None:
-        self.enemy.y = 800
-        self.enemy.move_down()
-        self.assertEqual(self.enemy.y, 800)
-
-    def test_enemy_shoot_alive(self) -> None:
-        bullet = self.enemy.shoot()
-        self.assertIsNotNone(bullet)
-        self.assertIsInstance(bullet, Bullet)
-
-    def test_enemy_shoot_dead(self) -> None:
-        self.enemy.hp = 0
-        bullet = self.enemy.shoot()
-        self.assertIsNone(bullet)
-
-    def test_enemy_direction_change_right(self) -> None:
-        self.enemy.direction = 1
-        self.enemy.direction_change()
-        self.assertEqual(self.enemy.x, 53)
-
-    def test_enemy_direction_change_left(self) -> None:
-        self.enemy.direction = -1
-        self.enemy.direction_change()
-        self.assertEqual(self.enemy.x, 47)
-
-
-class TestEnemyNegative(unittest.TestCase):
-    """Negative tests for Enemy class."""
-
-    def test_enemy_dead_no_direction_change(self) -> None:
-        enemy = Enemy(x=50, y=200, hp=0, speed=3)
-        initial_x = enemy.x
-        enemy.direction = 1
-        enemy.direction_change()
-        self.assertEqual(enemy.x, initial_x)
-
-
 class TestBulletBasics(unittest.TestCase):
-    """Test Bullet class functionality."""
+    """Test Bullet class functionality not already covered in entities tests."""
 
     def setUp(self) -> None:
         self.owner = Player(x=100, y=100, hp=3, speed=5, points=0)
         self.bullet = Bullet(x=100, y=100, speed=10, damage=1, direction=1, owner=self.owner)
-
-    def test_bullet_initialization(self) -> None:
-        self.assertEqual(self.bullet.x, 100)
-        self.assertEqual(self.bullet.y, 100)
-        self.assertEqual(self.bullet.speed, 10)
-        self.assertEqual(self.bullet.damage, 1)
-        self.assertEqual(self.bullet.direction, 1)
 
     def test_bullet_move_up(self) -> None:
         self.bullet.move()
@@ -261,28 +97,10 @@ class TestBulletBasics(unittest.TestCase):
 
 
 class TestBarrierBasics(unittest.TestCase):
-    """Test Barrier class functionality."""
+    """Test Barrier functionality not duplicated elsewhere."""
 
     def setUp(self) -> None:
         self.barrier = Barrier(x=200, y=400, hp=3, width=50, height=20)
-
-    def test_barrier_initialization(self) -> None:
-        self.assertEqual(self.barrier.x, 200)
-        self.assertEqual(self.barrier.y, 400)
-        self.assertEqual(self.barrier.hp, 3)
-        self.assertEqual(self.barrier.width, 50)
-        self.assertEqual(self.barrier.height, 20)
-
-    def test_barrier_is_destroyed_false(self) -> None:
-        self.assertFalse(self.barrier.is_destroyed())
-
-    def test_barrier_is_destroyed_true(self) -> None:
-        self.barrier.hp = 0
-        self.assertTrue(self.barrier.is_destroyed())
-
-    def test_barrier_take_damage(self) -> None:
-        self.barrier.take_damage(1)
-        self.assertEqual(self.barrier.hp, 2)
 
     def test_barrier_take_damage_multiple(self) -> None:
         self.barrier.take_damage(1)
@@ -291,11 +109,6 @@ class TestBarrierBasics(unittest.TestCase):
 
     def test_barrier_take_damage_overkill(self) -> None:
         self.barrier.take_damage(10)
-        self.assertEqual(self.barrier.hp, 0)
-
-    def test_barrier_take_damage_when_destroyed(self) -> None:
-        self.barrier.hp = 0
-        self.barrier.take_damage(1)
         self.assertEqual(self.barrier.hp, 0)
 
     def test_barrier_rectangle(self) -> None:
@@ -312,131 +125,11 @@ class TestBarrierNegative(unittest.TestCase):
             barrier.take_damage(-1)
 
 
-class TestGameState(unittest.TestCase):
-    """Test GameState class."""
-
-    def setUp(self) -> None:
-        self.player = Player(x=100, y=100, hp=1, speed=5, points=0)
-        self.game = GameState(state=1, player=self.player)
-
-    def test_game_state_init(self) -> None:
-        self.assertEqual(self.game.state, 1)
-
-    def test_game_start(self) -> None:
-        self.game.game_start()
-        self.assertEqual(self.game.state, 2)
-
-    def test_game_over_player_alive(self) -> None:
-        self.game.game_over()
-        self.assertEqual(self.game.state, 1)
-
-    def test_game_over_player_dead(self) -> None:
-        self.player.hp = 0
-        self.game.game_over()
-        self.assertEqual(self.game.state, 0)
-
-    def test_game_restart(self) -> None:
-        self.game.state = 0
-        self.game.game_restart()
-        self.assertEqual(self.game.state, 2)
-
-    def test_game_restart_not_in_gameover(self) -> None:
-        self.game.state = 1
-        self.game.game_restart()
-        self.assertEqual(self.game.state, 1)
-
-
-class TestWaveManager(unittest.TestCase):
-    """Test WaveManager class."""
-
-    def setUp(self) -> None:
-        self.enemies = [
-            Enemy(x=100, y=100, hp=1, speed=5, screen_width=800, screen_height=800),
-            Enemy(x=200, y=100, hp=1, speed=5, screen_width=800, screen_height=800),
-        ]
-        self.wave = WaveMenager(enemies=self.enemies)
-
-    def test_wave_init(self) -> None:
-        self.assertEqual(len(self.wave.enemies), 2)
-        self.assertEqual(self.wave.direction, 1)
-
-    def test_wave_move_right(self) -> None:
-        self.wave.move()
-        self.assertEqual(self.wave.enemies[0].x, 105)
-
-    def test_wave_move_empty_list(self) -> None:
-        self.wave.enemies = []
-        self.wave.move()
-        self.assertEqual(len(self.wave.enemies), 0)
-
-    def test_wave_remove_destroyed(self) -> None:
-        self.enemies[0].hp = 0
-        self.wave.remove_destroyed()
-        self.assertEqual(len(self.wave.enemies), 1)
-
-    def test_wave_remove_all_destroyed(self) -> None:
-        for enemy in self.enemies:
-            enemy.hp = 0
-        self.wave.remove_destroyed()
-        self.assertEqual(len(self.wave.enemies), 0)
-
-
-class TestScoreManager(unittest.TestCase):
-    """Test ScoreManager class."""
-
-    def setUp(self) -> None:
-        self.filename = 'test_score.txt'
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
-        self.score = ScoreManager(filename=self.filename)
-
-    def tearDown(self) -> None:
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
-
-    def test_score_init(self) -> None:
-        self.assertEqual(self.score.current_score, 0)
-        self.assertEqual(self.score.high_score, 0)
-
-    def test_score_add_points(self) -> None:
-        self.score.add_points(100)
-        self.assertEqual(self.score.current_score, 100)
-
-    def test_score_add_points_multiple(self) -> None:
-        self.score.add_points(50)
-        self.score.add_points(50)
-        self.assertEqual(self.score.current_score, 100)
-
-    def test_score_reset(self) -> None:
-        self.score.add_points(100)
-        self.score.reset()
-        self.assertEqual(self.score.current_score, 0)
-
-    def test_score_save(self) -> None:
-        self.score.add_points(500)
-        self.score.save()
-        self.assertTrue(os.path.exists(self.filename))
-
-    def test_score_load_no_file(self) -> None:
-        result = self.score.load()
-        self.assertEqual(result, 0)
-
-    def test_score_load_existing_file(self) -> None:
-        self.score.add_points(300)
-        self.score.save()
-        loaded = self.score.load()
-        self.assertEqual(loaded, 300)
-
-
 class TestCollisionHandler(unittest.TestCase):
-    """Test CollisionHandler class."""
+    """Test CollisionHandler helper operations."""
 
     def setUp(self) -> None:
         self.handler = CollisionHandler()
-        self.player = Player(x=100, y=500, hp=3, speed=5, points=0)
-        self.enemy = Enemy(x=100, y=500, hp=1, speed=3)
-        self.bullet = Bullet(x=100, y=500, speed=10, damage=1, direction=1, owner=self.player)
-        self.barrier = Barrier(x=100, y=400, hp=3, width=50, height=20)
 
     def test_rectangles_intersect_true(self) -> None:
         rect_a = (0, 0, 10, 10)
@@ -447,15 +140,6 @@ class TestCollisionHandler(unittest.TestCase):
         rect_a = (0, 0, 10, 10)
         rect_b = (20, 20, 10, 10)
         self.assertFalse(self.handler.rectangles_intersect(rect_a, rect_b))
-
-    def test_bullet_hits_entity_true(self) -> None:
-        result = self.handler.bullet_hits_entity(self.bullet, self.enemy)
-        self.assertTrue(result)
-
-    def test_bullet_hits_entity_false(self) -> None:
-        self.bullet.x = 999
-        result = self.handler.bullet_hits_entity(self.bullet, self.enemy)
-        self.assertFalse(result)
 
 
 class TestGameEngine(unittest.TestCase):
