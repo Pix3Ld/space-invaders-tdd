@@ -117,7 +117,7 @@ class CollisionHandler:
     @staticmethod
     def rectangles_intersect(
         rect_a: Tuple[int, int, int, int], rect_b: Tuple[int, int, int, int] # tuple of (x, y, width, height)
-    ) -> bool:
+    ) -> bool:#hit box collision
         """Check if two rectangles intersect."""
         ax, ay, aw, ah = rect_a # ax = x, ay = y, aw = width, ah = height
         bx, by, bw, bh = rect_b # bx = x, by = y, bw = width, bh = height
@@ -126,7 +126,7 @@ class CollisionHandler:
     def bullet_hits_entity(self, bullet: Bullet, entity: Union[Player, Enemy, Barrier]) -> bool:
         """Check if bullet collides with entity."""
         try:
-            entity_rect = entity.rectangle()
+            entity_rect = entity.rectangle()#hiboxs
         except AttributeError:
             entity_rect = (entity.x, entity.y, 0, 0)  # type: ignore
         return self.rectangles_intersect(entity_rect, bullet.rectangle())
